@@ -1,56 +1,48 @@
-# ⬡ AETHERIS — Next-Gen Developer Showcase & Portfolio
+# 🧬 Unwind the Helix — 3D Interactive Scrolling Website
 
-[![GitHub Pages](https://img.shields.io/badge/Deployed-GitHub%20Pages-06b6d4?style=for-the-badge&logo=github)](https://balakrishna-kr.github.io/aether-showcase/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-8b5cf6?style=for-the-badge)](LICENSE)
-[![Status: Active](https://img.shields.io/badge/Status-Production%20Ready-10b981?style=for-the-badge)]()
+[![Live Demo](https://img.shields.io/badge/Live-GitHub%20Pages-38bdf8?style=for-the-badge&logo=github)](https://balakrishna-kr.github.io/aether-showcase/)
+[![Figma Clone](https://img.shields.io/badge/Figma-Design%20Cloned-a855f7?style=for-the-badge&logo=figma)](assets/figma-design-reference.png)
+[![Three.js](https://img.shields.io/badge/Three.js-WebGL%203D-10b981?style=for-the-badge&logo=three.js)](https://threejs.org/)
 
-A high-performance developer portfolio and interactive showcase built with vanilla HTML5, CSS3 custom properties, and modern JavaScript. Designed with luxury glassmorphic aesthetics, dynamic color accent switcher, animated metrics, interactive CSS lab, and responsive layouts.
+An interactive 3D scrolling experience cloned from the Figma design **"3D Interactive Scrolling Website" (Unwind the Helix)**. Powered by WebGL and Three.js with real-time parametric double-helix generation, scroll-driven molecular strand unwinding, dynamic bioluminescent lighting, and spatial mouse parallax.
 
-🌐 **Live Demo:** [https://balakrishna-kr.github.io/aether-showcase/](https://balakrishna-kr.github.io/aether-showcase/)
-
----
-
-## ✨ Features
-
-- **Dynamic Accent Themes**: Switch effortlessly between Cyber Cyan, Electric Violet, Emerald Aurora, and Solar Amber palettes.
-- **Interactive Glass & Glow Lab**: Real-time CSS glassmorphism customizer with live copy-to-clipboard functionality.
-- **Curated Projects Showcase**: Filterable project cards with architectural breakdowns and interactive modal previews.
-- **Technical Capability Matrix**: Visual animated progress meters for frontend, backend, and cloud stacks.
-- **Zero Build Tool Overhead**: 100% vanilla web standards (HTML5, CSS3, ES2024 JS) with zero Node.js bundling or compile steps required for instantaneous GitHub Pages deployment.
-- **Lighthouse Performance**: Optimized semantic markup, responsive typography, and lightweight assets.
+🌐 **Live Website:** [https://balakrishna-kr.github.io/aether-showcase/](https://balakrishna-kr.github.io/aether-showcase/)  
+🎨 **Figma Reference File:** `https://www.figma.com/make/tveVDIesgOUejjr6Dvri97/3D-Interactive-Scrolling-Website`
 
 ---
 
-## 🚀 How to Run Locally
+## ✨ Key Features
 
-You can preview the site locally in any web browser without needing any server:
+- **Exact Figma Typography & Layout**: Replicating the headline *"Unwind the helix."*, glowing cyan neon bloom, clean frosted glass navigation, and minimal biotech dark mode.
+- **Parametric 3D Double Helix**: Built natively with Three.js without any heavy pre-rendered video. Two spiraling nucleotide backbone chains connected by base-pair rungs (Adenine-Thymine and Guanine-Cytosine).
+- **Scroll-Linked Unwinding Choreography**: As you scroll down through the narrative sections, the 3D double helix rotates, pitches in perspective, and physically uncouples and "unwinds" into separate parallel strands in 60 FPS real-time.
+- **Dynamic Bioluminescent Palettes**: Live switcher between **Cyan Bioluminescence**, **Violet Quantum**, **Emerald Biosynthesis**, and **Solar Core** affecting all 3D materials, lights, and CSS variables.
+- **Interactive 3D Control Studio**: Tweak unwind percentage, rotation velocity, helical radius, and particle starfield density on the fly.
+- **Free Orbit Drag**: Toggle between scroll-locked cinematic path and interactive 3D mouse/touch dragging.
+- **Zero Build Tool Overhead**: Runs natively on vanilla HTML5, CSS3, and ES6 JavaScript — deployed straight to GitHub Pages.
+
+---
+
+## 🚀 Running Locally
+
+Open [index.html](index.html) in any browser, or run a local static server:
 
 ```bash
 # Clone the repository
 git clone https://github.com/balakrishna-kr/aether-showcase.git
 
-# Navigate to directory
+# Navigate into folder
 cd aether-showcase
 
-# Open index.html directly, or use any local server:
-# With Python:
+# Run with Python
 python -m http.server 8000
 
-# With Node:
+# Or run with Node
 npx serve
 ```
 
 ---
 
-## 🛠️ How GitHub Pages Deployment Works
+## 🛠️ Deployment
 
-This site is hosted completely free on **GitHub Pages**:
-1. Code is pushed to the `main` branch.
-2. In the repository **Settings > Pages**, the source is configured to deploy from the `main` branch (root `/`).
-3. GitHub's deployment runner serves the static files at `https://balakrishna-kr.github.io/aether-showcase/`.
-
----
-
-## 📄 License
-
-Open-sourced under the [MIT License](LICENSE).
+Hosted automatically on **GitHub Pages** from the `main` branch.

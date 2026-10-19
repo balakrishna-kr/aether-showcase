@@ -1,430 +1,543 @@
 /**
- * AETHERIS SHOWCASE - INTERACTIVE LOGIC & CONTROLLERS
- * Handles themes, dynamic typing, glassmorphism lab, filters, modals & toasts.
+ * UNWIND THE HELIX - 3D WEBGL INTERACTION ENGINE
+ * Built with Three.js | Parametric Double Helix with Scroll-Triggered Unwinding
  */
 
+// Global State
+const state = {
+  unwindFactor: 0.0,
+  rotationSpeed: 0.006,
+  baseRadius: 2.5,
+  particleCount: 1200,
+  autoRotate: true,
+  freeOrbit: false,
+  themeColor: '#38bdf8',
+  secondaryColor: '#818cf8',
+  scrollProgress: 0,
+  targetScrollProgress: 0,
+  mouseX: 0,
+  mouseY: 0,
+  targetMouseX: 0,
+  targetMouseY: 0,
+  isDragging: false,
+  prevMouseX: 0,
+  prevMouseY: 0
+};
+
+// Three.js Core Components
+let scene, camera, renderer;
+let helixGroup, strandAGroup, strandBGroup, rungsGroup;
+let particlesMesh;
+let basePairMeshes = [];
+let strandSpheresA = [];
+let strandSpheresB = [];
+let dirLight1, dirLight2, pointLight;
+
+const NUM_POINTS = 80;
+const HELIX_HEIGHT = 28;
+const TURNS = 3.5;
+
 document.addEventListener('DOMContentLoaded', () => {
-  initThemeSwitcher();
-  initDynamicRoles();
-  initHeaderScroll();
-  initMobileNav();
-  initMetricsCounter();
-  initGlassLab();
-  initProjectFilters();
-  initProjectModal();
-  initContactForm();
+  initThree();
+  initHelix();
+  initParticles();
+  initEventListeners();
+  initUIControllers();
+  animate();
 });
 
 /* ==========================================================================
-   1. THEME & PALETTE SWITCHER
+   1. THREE.JS INITIALIZATION
    ========================================================================== */
-function initThemeSwitcher() {
-  const themeButtons = document.querySelectorAll('.theme-btn');
-  const body = document.body;
+function initThree() {
+  const canvas = document.getElementById('webgl-canvas');
 
-  // Restore saved theme if any
-  const savedTheme = localStorage.getItem('aetheris-theme') || 'cyan';
-  setTheme(savedTheme);
+  // Scene
+  scene = new THREE.Scene();
+  scene.fog = new THREE.FogExp2(0x030712, 0.032);
 
-  themeButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const color = btn.dataset.color;
-      setTheme(color);
-      showToast(`Palette switched to ${color.toUpperCase()} glow`);
-    });
+  // Camera
+  camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.set(0, 0, 22);
+
+  // Renderer
+  renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true,
+    alpha: true,
+    powerPreference: 'high-performance'
+  });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.2;
+
+  // Lighting
+  const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+  scene.add(ambientLight);
+
+  pointLight = new THREE.PointLight(0x38bdf8, 3, 40);
+  pointLight.position.set(5, 5, 10);
+  scene.add(pointLight);
+
+  dirLight1 = new THREE.DirectionalLight(0x818cf8, 1.5);
+  dirLight1.position.set(-10, 10, 8);
+  scene.add(dirLight1);
+
+  dirLight2 = new THREE.DirectionalLight(0x38bdf8, 1.2);
+  dirLight2.position.set(10, -10, 8);
+  scene.add(dirLight2);
+}
+
+/* ==========================================================================
+   2. PARAMETRIC 3D DOUBLE HELIX GENERATION
+   ========================================================================== */
+function initHelix() {
+  helixGroup = new THREE.Group();
+  strandAGroup = new THREE.Group();
+  strandBGroup = new THREE.Group();
+  rungsGroup = new THREE.Group();
+
+  helixGroup.add(strandAGroup);
+  helixGroup.add(strandBGroup);
+  helixGroup.add(rungsGroup);
+  scene.add(helixGroup);
+
+  // Initial positioning: shift right for Hero text balance
+  helixGroup.position.set(3.5, 0, 0);
+  helixGroup.rotation.z = 0.35; // Tilted aesthetic from Figma
+  helixGroup.rotation.x = 0.15;
+
+  const sphereGeo = new THREE.SphereGeometry(0.18, 16, 16);
+  const rungCylinderGeo = new THREE.CylinderGeometry(0.06, 0.06, 1, 12);
+
+  const matA = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.6,
+    roughness: 0.2,
+    metalness: 0.8
   });
 
-  function setTheme(theme) {
-    body.setAttribute('data-theme', theme);
-    localStorage.setItem('aetheris-theme', theme);
+  const matB = new THREE.MeshStandardMaterial({
+    color: 0x818cf8,
+    emissive: 0x4f46e5,
+    emissiveIntensity: 0.6,
+    roughness: 0.2,
+    metalness: 0.8
+  });
 
-    themeButtons.forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.color === theme);
-    });
+  const matRungCyan = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.4,
+    roughness: 0.3,
+    metalness: 0.5
+  });
+
+  const matRungViolet = new THREE.MeshStandardMaterial({
+    color: 0xa855f7,
+    emissive: 0x7e22ce,
+    emissiveIntensity: 0.4,
+    roughness: 0.3,
+    metalness: 0.5
+  });
+
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const t = i / (NUM_POINTS - 1);
+    const y = (t - 0.5) * HELIX_HEIGHT;
+    const angle = t * Math.PI * 2 * TURNS;
+
+    // Strand A Sphere
+    const sphereA = new THREE.Mesh(sphereGeo, matA);
+    sphereA.userData = { originalY: y, originalAngle: angle };
+    strandAGroup.add(sphereA);
+    strandSpheresA.push(sphereA);
+
+    // Strand B Sphere
+    const sphereB = new THREE.Mesh(sphereGeo, matB);
+    sphereB.userData = { originalY: y, originalAngle: angle + Math.PI };
+    strandBGroup.add(sphereB);
+    strandSpheresB.push(sphereB);
+
+    // Base pair rung (every second point)
+    if (i % 2 === 0) {
+      const mat = (i % 4 === 0) ? matRungCyan : matRungViolet;
+      const rungMesh = new THREE.Mesh(rungCylinderGeo, mat);
+      rungMesh.userData = { idxA: i, idxB: i };
+      rungsGroup.add(rungMesh);
+      basePairMeshes.push(rungMesh);
+    }
+  }
+
+  updateHelixGeometry(0);
+}
+
+/* ==========================================================================
+   3. HELIX UNWINDING & GEOMETRY UPDATES
+   ========================================================================== */
+function updateHelixGeometry(unwind) {
+  const currentRadius = state.baseRadius * (1 + unwind * 0.8);
+  const unwindSeparation = unwind * 5.0; // Distance strands drift apart when unwound
+
+  for (let i = 0; i < NUM_POINTS; i++) {
+    const sA = strandSpheresA[i];
+    const sB = strandSpheresB[i];
+
+    const angleA = sA.userData.originalAngle;
+    const angleB = sB.userData.originalAngle;
+    const y = sA.userData.originalY;
+
+    // As unwind progresses, helical twist decreases and strands pull apart laterally
+    const twistFactor = 1 - unwind * 0.75;
+    const currentAngleA = angleA * twistFactor;
+    const currentAngleB = angleB * twistFactor;
+
+    const xA = Math.cos(currentAngleA) * currentRadius - unwindSeparation * 0.6;
+    const zA = Math.sin(currentAngleA) * currentRadius;
+
+    const xB = Math.cos(currentAngleB) * currentRadius + unwindSeparation * 0.6;
+    const zB = Math.sin(currentAngleB) * currentRadius;
+
+    sA.position.set(xA, y, zA);
+    sB.position.set(xB, y, zB);
+  }
+
+  // Update Rung Connections between Strand A and Strand B
+  for (let j = 0; j < basePairMeshes.length; j++) {
+    const rung = basePairMeshes[j];
+    const sA = strandSpheresA[rung.userData.idxA];
+    const sB = strandSpheresB[rung.userData.idxB];
+
+    // When unwinding passes 35%, base pairs uncouple and fade out
+    if (unwind > 0.35) {
+      const scale = Math.max(0, 1 - (unwind - 0.35) * 2.2);
+      rung.scale.set(scale, scale, scale);
+    } else {
+      rung.scale.set(1, 1, 1);
+    }
+
+    const posA = sA.position;
+    const posB = sB.position;
+    const midPoint = new THREE.Vector3().addVectors(posA, posB).multiplyScalar(0.5);
+    rung.position.copy(midPoint);
+
+    const distance = posA.distanceTo(posB);
+    rung.scale.y = distance;
+
+    const direction = new THREE.Vector3().subVectors(posB, posA).normalize();
+    const up = new THREE.Vector3(0, 1, 0);
+    rung.quaternion.setFromUnitVectors(up, direction);
   }
 }
 
 /* ==========================================================================
-   2. DYNAMIC ROLES TYPER
+   4. AMBIENT GLOWING PARTICLE CLOUD
    ========================================================================== */
-function initDynamicRoles() {
-  const roleElement = document.getElementById('role-cycler');
-  if (!roleElement) return;
+function initParticles() {
+  const count = state.particleCount;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(count * 3);
+  const scales = new Float32Array(count);
 
-  const roles = [
-    'Full-Stack Architecture',
-    'Creative UI & Motion Design',
-    'Distributed Cloud Backends',
-    'AI Systems & WebGL Tooling',
-    'High-Performance Web Apps'
-  ];
+  for (let i = 0; i < count; i++) {
+    positions[i * 3 + 0] = (Math.random() - 0.5) * 45;
+    positions[i * 3 + 1] = (Math.random() - 0.5) * 50;
+    positions[i * 3 + 2] = (Math.random() - 0.5) * 35;
+    scales[i] = Math.random() * 0.25 + 0.05;
+  }
 
-  let currentIdx = 0;
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('scale', new THREE.BufferAttribute(scales, 1));
 
-  setInterval(() => {
-    roleElement.style.opacity = '0';
-    roleElement.style.transform = 'translateY(8px)';
+  // Custom soft particle shader material
+  const material = new THREE.PointsMaterial({
+    size: 0.18,
+    color: 0x38bdf8,
+    transparent: true,
+    opacity: 0.65,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false
+  });
 
-    setTimeout(() => {
-      currentIdx = (currentIdx + 1) % roles.length;
-      roleElement.textContent = roles[currentIdx];
-      roleElement.style.opacity = '1';
-      roleElement.style.transform = 'translateY(0)';
-    }, 280);
-  }, 3200);
+  particlesMesh = new THREE.Points(geometry, material);
+  scene.add(particlesMesh);
 }
 
 /* ==========================================================================
-   3. HEADER SCROLL EFFECT & ACTIVE LINKS
+   5. EVENT LISTENERS & SCROLL CONTROLLER
    ========================================================================== */
-function initHeaderScroll() {
-  const header = document.getElementById('header');
-  const navLinks = document.querySelectorAll('.nav-item');
-  const sections = document.querySelectorAll('section');
+function initEventListeners() {
+  window.addEventListener('resize', onWindowResize);
 
+  // Mouse Parallax & Drag Orbit
+  const canvas = document.getElementById('webgl-canvas');
+
+  window.addEventListener('mousemove', (e) => {
+    state.targetMouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    state.targetMouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+
+    if (state.isDragging && state.freeOrbit) {
+      const deltaX = e.clientX - state.prevMouseX;
+      const deltaY = e.clientY - state.prevMouseY;
+      helixGroup.rotation.y += deltaX * 0.01;
+      helixGroup.rotation.x += deltaY * 0.01;
+      state.prevMouseX = e.clientX;
+      state.prevMouseY = e.clientY;
+    }
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    state.isDragging = true;
+    state.prevMouseX = e.clientX;
+    state.prevMouseY = e.clientY;
+  });
+
+  window.addEventListener('mouseup', () => {
+    state.isDragging = false;
+  });
+
+  // Touch controls for mobile
+  window.addEventListener('touchmove', (e) => {
+    if (e.touches.length > 0) {
+      state.targetMouseX = (e.touches[0].clientX / window.innerWidth - 0.5) * 2;
+      state.targetMouseY = (e.touches[0].clientY / window.innerHeight - 0.5) * 2;
+    }
+  }, { passive: true });
+
+  // Scroll Progress Calculation
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 40) {
+    const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+    state.targetScrollProgress = Math.max(0, Math.min(1, window.scrollY / scrollHeight));
+
+    // Header styling on scroll
+    const header = document.getElementById('header');
+    if (window.scrollY > 50) {
       header.classList.add('scrolled');
     } else {
       header.classList.remove('scrolled');
     }
 
-    // ScrollSpy active link detection
-    let currentSectionId = '';
-    sections.forEach(section => {
-      const top = section.offsetTop - 120;
-      const height = section.offsetHeight;
-      if (window.scrollY >= top && window.scrollY < top + height) {
-        currentSectionId = section.getAttribute('id');
-      }
-    });
-
-    navLinks.forEach(link => {
-      link.classList.remove('active');
-      if (link.getAttribute('href') === `#${currentSectionId}`) {
-        link.classList.add('active');
+    // ScrollSpy active link
+    const sections = ['hero', 'architecture', 'sequencing', 'lab'];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        const top = el.offsetTop - 200;
+        const height = el.offsetHeight;
+        if (window.scrollY >= top && window.scrollY < top + height) {
+          document.querySelectorAll('.nav-item').forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === `#${id}`);
+          });
+        }
       }
     });
   });
 }
 
+function onWindowResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+}
+
 /* ==========================================================================
-   4. MOBILE NAVIGATION
+   6. UI INTERACTIVE CONTROLLERS
    ========================================================================== */
-function initMobileNav() {
+function initUIControllers() {
+  // Mobile Nav Toggle
   const toggleBtn = document.getElementById('mobile-toggle');
   const navLinks = document.getElementById('nav-links');
-
-  if (!toggleBtn || !navLinks) return;
-
-  toggleBtn.addEventListener('click', () => {
-    navLinks.classList.toggle('open');
-  });
-
-  // Close when link clicked
-  navLinks.querySelectorAll('.nav-item').forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
+  if (toggleBtn && navLinks) {
+    toggleBtn.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
     });
-  });
-}
-
-/* ==========================================================================
-   5. METRICS ANIMATED COUNTER
-   ========================================================================== */
-function initMetricsCounter() {
-  const metricItems = document.querySelectorAll('.metric-num');
-  let animated = false;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !animated) {
-        animated = true;
-        metricItems.forEach(item => {
-          const target = parseInt(item.dataset.target, 10);
-          const suffix = item.textContent.replace(/[0-9]/g, '');
-          let count = 0;
-          const duration = 1600;
-          const increment = target / (duration / 25);
-
-          const timer = setInterval(() => {
-            count += increment;
-            if (count >= target) {
-              item.textContent = target + suffix;
-              clearInterval(timer);
-            } else {
-              item.textContent = Math.floor(count) + suffix;
-            }
-          }, 25);
-        });
-      }
+    navLinks.querySelectorAll('.nav-item').forEach(link => {
+      link.addEventListener('click', () => navLinks.classList.remove('open'));
     });
-  }, { threshold: 0.3 });
-
-  const metricsBar = document.querySelector('.metrics-bar');
-  if (metricsBar) observer.observe(metricsBar);
-}
-
-/* ==========================================================================
-   6. INTERACTIVE GLASSMORPHISM LAB
-   ========================================================================== */
-function initGlassLab() {
-  const blurSlider = document.getElementById('blur-slider');
-  const opacitySlider = document.getElementById('opacity-slider');
-  const borderSlider = document.getElementById('border-slider');
-  const glowSlider = document.getElementById('glow-slider');
-
-  const blurVal = document.getElementById('blur-val');
-  const opacityVal = document.getElementById('opacity-val');
-  const borderVal = document.getElementById('border-val');
-  const glowVal = document.getElementById('glow-val');
-
-  const previewCard = document.getElementById('lab-preview-card');
-  const liveCssSnippet = document.getElementById('live-css-snippet');
-  const copyBtn = document.getElementById('copy-css-btn');
-  const resetBtn = document.getElementById('lab-reset-btn');
-
-  if (!previewCard) return;
-
-  function updateLab() {
-    const blur = blurSlider.value;
-    const opacity = opacitySlider.value;
-    const radius = borderSlider.value;
-    const glow = glowSlider.value;
-
-    blurVal.textContent = `${blur}px`;
-    opacityVal.textContent = opacity;
-    borderVal.textContent = `${radius}px`;
-    glowVal.textContent = `${glow}px`;
-
-    // Apply live styling to the card
-    previewCard.style.backdropFilter = `blur(${blur}px)`;
-    previewCard.style.webkitBackdropFilter = `blur(${blur}px)`;
-    previewCard.style.backgroundColor = `rgba(14, 19, 31, ${opacity})`;
-    previewCard.style.borderRadius = `${radius}px`;
-    previewCard.style.boxShadow = `0 10px 30px rgba(0,0,0,0.45), 0 0 ${glow}px var(--primary-accent-glow)`;
-
-    // Generate formatted CSS code
-    const cssCode = `.glass-card {
-  background: rgba(14, 19, 31, ${opacity});
-  backdrop-filter: blur(${blur}px);
-  -webkit-backdrop-filter: blur(${blur}px);
-  border-radius: ${radius}px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), 0 0 ${glow}px var(--glow-color);
-}`;
-
-    liveCssSnippet.textContent = cssCode;
   }
 
-  [blurSlider, opacitySlider, borderSlider, glowSlider].forEach(slider => {
-    slider.addEventListener('input', updateLab);
-  });
-
-  resetBtn.addEventListener('click', () => {
-    blurSlider.value = 16;
-    opacitySlider.value = 0.45;
-    borderSlider.value = 20;
-    glowSlider.value = 24;
-    updateLab();
-    showToast('Lab values reset to standard preset');
-  });
-
-  copyBtn.addEventListener('click', () => {
-    const code = liveCssSnippet.textContent;
-    navigator.clipboard.writeText(code).then(() => {
-      showToast('CSS snippet copied to clipboard! 📋');
-    }).catch(() => {
-      showToast('Unable to copy automatically');
-    });
-  });
-
-  updateLab();
-}
-
-/* ==========================================================================
-   7. PROJECT FILTERING
-   ========================================================================== */
-function initProjectFilters() {
-  const filterButtons = document.querySelectorAll('.filter-btn');
-  const projectCards = document.querySelectorAll('.project-card');
-
-  filterButtons.forEach(btn => {
+  // 3D Color Mode Switcher
+  const themeButtons = document.querySelectorAll('.theme-btn');
+  themeButtons.forEach(btn => {
     btn.addEventListener('click', () => {
-      filterButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      const colorKey = btn.dataset.color;
+      document.body.setAttribute('data-theme', colorKey);
 
-      const filter = btn.dataset.filter;
+      themeButtons.forEach(b => b.classList.toggle('active', b === btn));
 
-      projectCards.forEach(card => {
-        const category = card.dataset.category;
-        if (filter === 'all' || category === filter) {
-          card.style.display = 'flex';
-          setTimeout(() => {
-            card.style.opacity = '1';
-            card.style.transform = 'translateY(0)';
-          }, 10);
-        } else {
-          card.style.opacity = '0';
-          card.style.transform = 'translateY(15px)';
-          setTimeout(() => {
-            card.style.display = 'none';
-          }, 250);
-        }
-      });
-    });
-  });
-}
+      let primaryHex = 0x38bdf8;
+      let secondaryHex = 0x818cf8;
 
-/* ==========================================================================
-   8. PROJECT DETAIL MODAL
-   ========================================================================== */
-const projectData = {
-  pulseaudio: {
-    title: 'PulseAudio Visualizer & Audio Engine',
-    category: 'Interactive Web Audio & GLSL Shaders',
-    description: 'An advanced frequency analyzer that decodes audio inputs in real-time using the HTML5 Web Audio API and maps frequency bins into smooth 3D particle vortexes using custom GLSL fragment shaders.',
-    architecture: [
-      'Zero external build dependencies for lightning execution',
-      'High-resolution Fourier transform (FFT) analysis pipeline',
-      'Interactive canvas control surface with customizable audio filters'
-    ],
-    tech: ['Web Audio API', 'HTML5 Canvas', 'GLSL Shaders', 'Web Workers'],
-    github: 'https://github.com/balakrishna-kr'
-  },
-  custservice: {
-    title: 'Customer Service Intelligence Platform',
-    category: 'Full-Stack Architecture & Workflows',
-    description: 'An automated incident handling and operational dashboard built with modern React, Node.js, and relational database persistence. Provides agents with real-time websocket updates, smart routing, and ticket lifecycle telemetry.',
-    architecture: [
-      'Event-driven pub/sub architecture for instant ticket dispatches',
-      'Role-based Access Control (RBAC) and audit trail logging',
-      'RESTful endpoints with sub-50ms latency guarantees'
-    ],
-    tech: ['React / Next.js', 'Node.js', 'Express', 'PostgreSQL', 'WebSockets'],
-    github: 'https://github.com/balakrishna-kr/customer-service-frontend'
-  },
-  comicportfolio: {
-    title: 'Comic-Style Dynamic Portfolio Engine',
-    category: 'Creative Frontend & Visual Interaction',
-    description: 'A whimsical yet structured interactive portfolio layout influenced by graphic novel aesthetics. Features custom panel grids, responsive narrative storytelling, and halftone gradient styling.',
-    architecture: [
-      'Pure CSS layout transitions without heavy external UI packages',
-      'Accessible keyboard navigation across comic panels',
-      'Adaptive light/dark ink schemes with high contrast modes'
-    ],
-    tech: ['HTML5', 'CSS Grid', 'Custom SVGs', 'Vanilla JavaScript'],
-    github: 'https://github.com/balakrishna-kr/Comic-Style-Portfolio-Website'
-  },
-  oauthsso: {
-    title: 'Secure OAuth 2.0 & SSO Auth Gateway',
-    category: 'Cloud Identity & Microservices',
-    description: 'Production-ready authentication provider supporting Google Identity Services, OAuth 2.0 authorization code flow, cryptographic token validation, and hardened session storage.',
-    architecture: [
-      'Cryptographically signed JWT bearer token management',
-      'CORS security middleware and rate-limiting safeguards',
-      'Direct enterprise Single Sign-On (SSO) readiness'
-    ],
-    tech: ['OAuth 2.0', 'JWT', 'Node.js', 'Express', 'Cybersecurity'],
-    github: 'https://github.com/balakrishna-kr/google-auth'
-  }
-};
+      if (colorKey === 'violet') {
+        primaryHex = 0xa855f7;
+        secondaryHex = 0x38bdf8;
+      } else if (colorKey === 'emerald') {
+        primaryHex = 0x10b981;
+        secondaryHex = 0x06b6d4;
+      } else if (colorKey === 'amber') {
+        primaryHex = 0xf59e0b;
+        secondaryHex = 0xef4444;
+      }
 
-function initProjectModal() {
-  const modal = document.getElementById('project-modal');
-  const modalContent = document.getElementById('modal-content');
-  const closeBtn = document.getElementById('modal-close-btn');
-  const triggers = document.querySelectorAll('.project-modal-trigger');
+      // Update 3D materials dynamically
+      strandSpheresA.forEach(s => s.material.color.setHex(primaryHex));
+      strandSpheresB.forEach(s => s.material.color.setHex(secondaryHex));
+      if (particlesMesh) particlesMesh.material.color.setHex(primaryHex);
+      if (pointLight) pointLight.color.setHex(primaryHex);
 
-  if (!modal || !modalContent) return;
-
-  triggers.forEach(trigger => {
-    trigger.addEventListener('click', () => {
-      const pKey = trigger.dataset.project;
-      const data = projectData[pKey];
-      if (!data) return;
-
-      modalContent.innerHTML = `
-        <div class="modal-badge">${data.category}</div>
-        <h2 style="font-size: 1.6rem; margin: 0.5rem 0 1rem; color: #fff;">${data.title}</h2>
-        <p style="color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.65;">${data.description}</p>
-        
-        <h4 style="color: var(--primary-accent); margin-bottom: 0.6rem; font-size: 1rem;">Key Highlights & Architecture:</h4>
-        <ul style="color: var(--text-muted); margin-left: 1.2rem; margin-bottom: 1.8rem; font-size: 0.95rem;">
-          ${data.architecture.map(item => `<li style="margin-bottom: 0.4rem;">${item}</li>`).join('')}
-        </ul>
-
-        <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 2rem;">
-          ${data.tech.map(t => `<span class="tag" style="background: var(--bg-surface-elevated);">${t}</span>`).join('')}
-        </div>
-
-        <div style="display: flex; gap: 1rem;">
-          <a href="${data.github}" target="_blank" rel="noopener noreferrer" class="btn btn-primary btn-sm">View on GitHub</a>
-          <button class="btn btn-outline btn-sm modal-dismiss">Close Preview</button>
-        </div>
-      `;
-
-      modal.classList.add('active');
-      modal.setAttribute('aria-hidden', 'false');
-
-      modalContent.querySelector('.modal-dismiss').addEventListener('click', closeModal);
+      showToast(`3D Bioluminescence shifted to ${colorKey.toUpperCase()}`);
     });
   });
 
-  function closeModal() {
-    modal.classList.remove('active');
-    modal.setAttribute('aria-hidden', 'true');
+  // Sandbox Sliders
+  const unwindSlider = document.getElementById('unwind-slider');
+  const speedSlider = document.getElementById('speed-slider');
+  const radiusSlider = document.getElementById('radius-slider');
+  const particlesSlider = document.getElementById('particles-slider');
+
+  if (unwindSlider) {
+    unwindSlider.addEventListener('input', (e) => {
+      state.unwindFactor = parseFloat(e.target.value) / 100;
+      document.getElementById('unwind-val').textContent = `${e.target.value}%`;
+      updateHelixGeometry(state.unwindFactor);
+    });
   }
 
-  if (closeBtn) closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => {
-    if (e.target === modal) closeModal();
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
-  });
+  if (speedSlider) {
+    speedSlider.addEventListener('input', (e) => {
+      const val = parseFloat(e.target.value) / 10;
+      state.rotationSpeed = 0.006 * val;
+      document.getElementById('speed-val').textContent = `${val.toFixed(1)}x`;
+    });
+  }
+
+  if (radiusSlider) {
+    radiusSlider.addEventListener('input', (e) => {
+      state.baseRadius = parseFloat(e.target.value) / 10;
+      document.getElementById('radius-val').textContent = state.baseRadius.toFixed(1);
+      updateHelixGeometry(state.unwindFactor);
+    });
+  }
+
+  if (particlesSlider) {
+    particlesSlider.addEventListener('input', (e) => {
+      document.getElementById('particles-val').textContent = e.target.value;
+      state.particleCount = parseInt(e.target.value, 10);
+      if (particlesMesh) scene.remove(particlesMesh);
+      initParticles();
+    });
+  }
+
+  // Sandbox Buttons
+  const resetBtn = document.getElementById('reset-cam-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      helixGroup.rotation.set(0.15, 0, 0.35);
+      helixGroup.position.set(3.5, 0, 0);
+      state.unwindFactor = 0;
+      if (unwindSlider) unwindSlider.value = 0;
+      document.getElementById('unwind-val').textContent = '0%';
+      updateHelixGeometry(0);
+      showToast('Camera and Helix reset to Hero position');
+    });
+  }
+
+  const toggleOrbitBtn = document.getElementById('toggle-orbit-btn');
+  if (toggleOrbitBtn) {
+    toggleOrbitBtn.addEventListener('click', () => {
+      state.freeOrbit = !state.freeOrbit;
+      toggleOrbitBtn.textContent = state.freeOrbit ? 'Disable Orbit' : 'Toggle Free Orbit';
+      showToast(state.freeOrbit ? 'Free 3D mouse drag enabled!' : 'Scroll-locked mode enabled');
+    });
+  }
 }
 
 /* ==========================================================================
-   9. CONTACT FORM CONTROLLER
+   7. TOAST NOTIFICATIONS
    ========================================================================== */
-function initContactForm() {
-  const form = document.getElementById('contact-form');
-  const submitBtn = document.getElementById('send-msg-btn');
-
-  if (!form || !submitBtn) return;
-
-  form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    const originalBtnContent = submitBtn.innerHTML;
-    submitBtn.innerHTML = `<span>Transmitting Message...</span>`;
-    submitBtn.style.opacity = '0.7';
-    submitBtn.disabled = true;
-
-    setTimeout(() => {
-      form.reset();
-      submitBtn.innerHTML = originalBtnContent;
-      submitBtn.style.opacity = '1';
-      submitBtn.disabled = false;
-      showToast('⚡ Message sent successfully! I will reply shortly.');
-    }, 900);
-  });
-}
-
-/* ==========================================================================
-   10. FLOATING TOAST SYSTEM
-   ========================================================================== */
-let toastTimeout;
-function showToast(message) {
+let toastTimer;
+function showToast(msg) {
   const toast = document.getElementById('toast');
   if (!toast) return;
-
-  clearTimeout(toastTimeout);
-  toast.textContent = message;
+  clearTimeout(toastTimer);
+  toast.textContent = msg;
   toast.classList.add('show');
+  toastTimer = setTimeout(() => toast.classList.remove('show'), 3000);
+}
 
-  toastTimeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, 3200);
+/* ==========================================================================
+   8. RENDER & ANIMATION LOOP (60 FPS)
+   ========================================================================== */
+function animate() {
+  requestAnimationFrame(animate);
+
+  // Smooth lerp for scroll and mouse
+  state.scrollProgress += (state.targetScrollProgress - state.scrollProgress) * 0.07;
+  state.mouseX += (state.targetMouseX - state.mouseX) * 0.05;
+  state.mouseY += (state.targetMouseY - state.mouseY) * 0.05;
+
+  // Auto Rotation + Mouse Parallax
+  if (!state.isDragging) {
+    helixGroup.rotation.y += state.rotationSpeed;
+  }
+
+  // Camera subtle parallax
+  camera.position.x = state.mouseX * 1.5;
+  camera.position.y = -state.mouseY * 1.2;
+  camera.lookAt(0, 0, 0);
+
+  // Scroll Choreography (Spatial Camera & Helix Movement)
+  const sp = state.scrollProgress;
+
+  if (!state.freeOrbit) {
+    // Stage 1 (0 to 0.3): Hero Position (Shifted right)
+    // Stage 2 (0.3 to 0.7): Architecture & Sequencing (Shifts left to allow text readability on right)
+    // Stage 3 (0.7 to 1.0): Lab & Controls (Moves to center and unwinds)
+    let targetX = 3.5;
+    let targetY = 0;
+    let targetZ = 0;
+    let targetUnwind = 0;
+
+    if (sp < 0.35) {
+      const p = sp / 0.35;
+      targetX = 3.5 - p * 1.0;
+      targetUnwind = p * 0.15;
+    } else if (sp < 0.75) {
+      const p = (sp - 0.35) / 0.4;
+      targetX = 2.5 - p * 6.5; // Glides to -4.0 (left side)
+      targetY = p * 1.5;
+      targetUnwind = 0.15 + p * 0.55; // Unwinds up to 70%
+    } else {
+      const p = (sp - 0.75) / 0.25;
+      targetX = -4.0 + p * 4.0; // Returns to center 0.0
+      targetY = 1.5 - p * 1.5;
+      targetUnwind = 0.70 + p * 0.30; // Unwinds up to 100%
+    }
+
+    helixGroup.position.x += (targetX - helixGroup.position.x) * 0.08;
+    helixGroup.position.y += (targetY - helixGroup.position.y) * 0.08;
+    helixGroup.position.z += (targetZ - helixGroup.position.z) * 0.08;
+
+    // Apply scroll-driven unwind if user hasn't manually overridden via sandbox
+    if (document.getElementById('unwind-slider')?.value === '0') {
+      updateHelixGeometry(targetUnwind);
+      document.getElementById('hud-unwind').textContent = `${(targetUnwind * 100).toFixed(1)}%`;
+    }
+  }
+
+  // Gentle particle drift
+  if (particlesMesh) {
+    particlesMesh.rotation.y += 0.0006;
+    particlesMesh.rotation.x += 0.0003;
+  }
+
+  // Update Telemetry HUD
+  const hudRot = document.getElementById('hud-rotation');
+  if (hudRot) {
+    hudRot.textContent = `${(helixGroup.rotation.y % (Math.PI * 2)).toFixed(2)} rad`;
+  }
+
+  renderer.render(scene, camera);
 }

@@ -3,64 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Aetheris | Next-Gen Developer Showcase & Portfolio</title>
-  <meta name="description" content="A modern, high-performance developer showcase and interactive portfolio crafted with precision, glassmorphism aesthetics, and responsive micro-interactions.">
-  <meta name="keywords" content="developer portfolio, frontend engineer, full stack developer, creative technologist, web showcase, github pages">
+  <title>Unwind the Helix | 3D Interactive Scrolling Website</title>
+  <meta name="description" content="A stunning 3D interactive scrolling experience decoding the language of life. Built with WebGL, Three.js, and spatial interaction based on Figma design.">
+  <meta name="keywords" content="3D website, interactive scrolling, Three.js, DNA helix, WebGL, biotech UI, Figma clone">
   <meta name="author" content="Balakrishna K R">
 
-  <!-- Open Graph / Social Sharing -->
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="Aetheris — Next-Gen Developer Showcase">
-  <meta property="og:description" content="Explore cutting-edge web applications, interactive experiments, and creative UI engineering.">
-  <meta property="og:image" content="assets/hero-banner.jpg">
+  <!-- Open Graph -->
+  <meta property="og:title" content="Unwind the Helix — 3D Interactive Scrolling Experience">
+  <meta property="og:description" content="Explore genetic architecture in real-time 3D spatial computing. Cloned from Figma design.">
+  <meta property="og:image" content="assets/figma-design-reference.png">
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Three.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-theme="cyan">
-  <!-- Glowing Background Canvas -->
-  <div class="ambient-glow ambient-glow-1"></div>
-  <div class="ambient-glow ambient-glow-2"></div>
-  <div class="ambient-glow ambient-glow-3"></div>
+  <!-- Fullscreen 3D WebGL Canvas -->
+  <canvas id="webgl-canvas"></canvas>
 
-  <!-- Header / Navigation -->
+  <!-- Ambient Cinematic Gradients -->
+  <div class="ambient-vignette"></div>
+
+  <!-- Header / Navigation Bar -->
   <header class="header" id="header">
     <div class="nav-container">
       <a href="#hero" class="brand-logo" id="brand-logo">
-        <span class="logo-symbol">⬡</span>
-        <span class="logo-text">AETHERIS<span class="accent-dot">.</span></span>
+        <span class="logo-symbol">🧬</span>
+        <span class="logo-text">HELIX<span class="accent-dot">.3D</span></span>
       </a>
 
       <nav class="nav-links" id="nav-links">
-        <a href="#about" class="nav-item">About</a>
-        <a href="#projects" class="nav-item">Projects</a>
-        <a href="#lab" class="nav-item">Interactive Lab</a>
-        <a href="#skills" class="nav-item">Tech Stack</a>
-        <a href="#contact" class="nav-item">Contact</a>
+        <a href="#hero" class="nav-item active">Overview</a>
+        <a href="#architecture" class="nav-item">Architecture</a>
+        <a href="#sequencing" class="nav-item">Sequencing</a>
+        <a href="#lab" class="nav-item">3D Sandbox</a>
       </nav>
 
       <div class="nav-actions">
-        <!-- Palette Switcher -->
-        <div class="theme-selector" id="theme-selector" title="Switch Accent Hue">
-          <button class="theme-btn theme-cyan active" data-color="cyan" aria-label="Cyan Accent"></button>
-          <button class="theme-btn theme-violet" data-color="violet" aria-label="Violet Accent"></button>
-          <button class="theme-btn theme-emerald" data-color="emerald" aria-label="Emerald Accent"></button>
-          <button class="theme-btn theme-amber" data-color="amber" aria-label="Amber Accent"></button>
+        <!-- 3D Color Mode Picker -->
+        <div class="theme-selector" id="theme-selector" title="Switch 3D Bioluminescence">
+          <button class="theme-btn theme-cyan active" data-color="cyan" aria-label="Cyan Bioluminescence"></button>
+          <button class="theme-btn theme-violet" data-color="violet" aria-label="Violet Quantum"></button>
+          <button class="theme-btn theme-emerald" data-color="emerald" aria-label="Emerald Biosynthesis"></button>
+          <button class="theme-btn theme-amber" data-color="amber" aria-label="Solar Core"></button>
         </div>
 
         <a href="https://github.com/balakrishna-kr/aether-showcase" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" id="repo-btn">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
           <span>GitHub</span>
         </a>
 
-        <!-- Mobile Menu Toggle -->
-        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation Menu">
+        <!-- Mobile Toggle -->
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation">
           <span></span>
           <span></span>
           <span></span>
@@ -69,470 +71,165 @@
     </div>
   </header>
 
-  <main>
-    <!-- Hero Section -->
-    <section class="hero-section" id="hero">
-      <div class="container hero-grid">
-        <div class="hero-content">
-          <div class="status-pill" id="status-pill">
-            <span class="pulse-dot"></span>
-            <span class="status-text">Available for High-Impact Roles & Consulting</span>
-          </div>
-
-          <h1 class="hero-title" id="hero-title">
-            Crafting <span class="gradient-text">Exceptional Web</span> & Digital Systems
-          </h1>
-
-          <p class="hero-description" id="hero-description">
-            Hi, I'm <strong class="highlight-text">Balakrishna K R</strong> — Full-Stack Software Engineer & Creative Technologist. I build ultra-fast, responsive web applications, robust cloud backends, and intuitive interactive user experiences.
-          </p>
-
-          <div class="dynamic-roles" id="dynamic-roles">
-            <span class="role-prefix">Specialized in: </span>
-            <span class="role-badge" id="role-cycler">Full-Stack Architecture</span>
-          </div>
-
-          <div class="hero-cta-group">
-            <a href="#projects" class="btn btn-primary" id="explore-work-btn">
-              <span>Explore Projects</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-            <a href="#lab" class="btn btn-glass" id="open-lab-btn">
-              <span class="btn-icon">⚡</span>
-              <span>Interactive UI Lab</span>
-            </a>
-            <a href="#contact" class="btn btn-outline" id="contact-me-btn">
-              <span>Get In Touch</span>
-            </a>
-          </div>
-
-          <!-- Social Quick Links -->
-          <div class="hero-socials">
-            <span class="social-label">Find me on:</span>
-            <a href="https://github.com/balakrishna-kr" target="_blank" rel="noopener noreferrer" class="social-icon" title="GitHub Profile">
-              <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>
-            </a>
-            <a href="mailto:balakrishnakalvehalli@gmail.com" class="social-icon" title="Send Email">
-              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-            </a>
-            <span class="location-tag">📍 Bengaluru, India</span>
-          </div>
+  <!-- Scrollable Interactive Experience -->
+  <main class="scroll-container">
+    <!-- Section 1: Hero (Figma Exact Match) -->
+    <section class="story-section section-hero" id="hero">
+      <div class="content-wrapper">
+        <div class="status-pill">
+          <span class="pulse-dot"></span>
+          <span class="status-text">FIGMA 3D INTERACTIVE SCROLLING CLONE</span>
         </div>
 
-        <!-- Hero Visual Showcase Card -->
-        <div class="hero-visual">
-          <div class="visual-card-wrapper">
-            <div class="visual-card-glow"></div>
-            <div class="visual-card">
-              <div class="card-header-bar">
-                <div class="window-dots">
-                  <span class="dot dot-red"></span>
-                  <span class="dot dot-yellow"></span>
-                  <span class="dot dot-green"></span>
-                </div>
-                <div class="window-title">aetheris-core-terminal :: live-node</div>
-                <div class="window-badge">v2.4 LTS</div>
-              </div>
-              <div class="card-image-container">
-                <img src="assets/hero-banner.jpg" alt="Aetheris Cybernetic Core Interface Visualization" class="hero-feature-img" id="hero-img">
-                <div class="image-overlay-glow"></div>
-              </div>
-              <div class="card-footer-stats">
-                <div class="mini-stat">
-                  <span class="mini-label">LATENCY</span>
-                  <span class="mini-value text-accent">&lt;24ms</span>
-                </div>
-                <div class="mini-stat">
-                  <span class="mini-label">SYSTEM HEALTH</span>
-                  <span class="mini-value text-emerald">100% OK</span>
-                </div>
-                <div class="mini-stat">
-                  <span class="mini-label">DEPLOYMENT</span>
-                  <span class="mini-value text-cyan">GH-PAGES</span>
-                </div>
-              </div>
-            </div>
+        <h1 class="hero-title" id="hero-title">
+          Unwind<br>the <span class="helix-glow">helix.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Explore the deep architecture of human genetic sequencing through real-time 3D spatial computing. Scroll down to unwind the molecular strands and reveal the code.
+        </p>
+
+        <div class="cta-row">
+          <a href="#architecture" class="btn btn-primary" id="discover-btn">
+            <span>Discover the code</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#lab" class="btn btn-glass" id="open-sandbox-btn">
+            <span>⚡ 3D Sandbox Mode</span>
+          </a>
+        </div>
+
+        <div class="scroll-hint">
+          <div class="scroll-mouse">
+            <div class="scroll-wheel"></div>
           </div>
+          <span class="scroll-label">Scroll to Unwind</span>
         </div>
       </div>
+    </section>
 
-      <!-- Quick Metrics Bar -->
-      <div class="metrics-bar">
-        <div class="container metrics-grid">
-          <div class="metric-item">
-            <span class="metric-num" data-target="30">0+</span>
-            <span class="metric-desc">Projects & Tools Shipped</span>
+    <!-- Section 2: Molecular Architecture -->
+    <section class="story-section section-architecture" id="architecture">
+      <div class="content-wrapper align-right">
+        <div class="section-badge">MOLECULAR BLUEPRINT</div>
+        <h2 class="section-title">The Language of Double Strands</h2>
+        <p class="section-subtitle">
+          Every helical turn spans 3.4 nanometers and exactly 10.5 base pairs. As you scroll, observe the nitrogenous bases uncoupling in real time.
+        </p>
+
+        <div class="feature-cards-grid">
+          <div class="glass-card">
+            <div class="card-icon" style="color: #38bdf8;">A — T</div>
+            <h3>Adenine & Thymine</h3>
+            <p>Connected via double hydrogen bonds, forming the foundational kinetic flexibility of the helical backbone.</p>
           </div>
-          <div class="metric-divider"></div>
-          <div class="metric-item">
-            <span class="metric-num" data-target="99">0%</span>
-            <span class="metric-desc">Client & Code Quality</span>
-          </div>
-          <div class="metric-divider"></div>
-          <div class="metric-item">
-            <span class="metric-num" data-target="60">0 FPS</span>
-            <span class="metric-desc">Smooth UI Performance</span>
-          </div>
-          <div class="metric-divider"></div>
-          <div class="metric-item">
-            <span class="metric-num" data-target="100">0%</span>
-            <span class="metric-desc">Static GitHub Pages Ready</span>
+          <div class="glass-card">
+            <div class="card-icon" style="color: #a855f7;">G — C</div>
+            <h3>Guanine & Cytosine</h3>
+            <p>Bound by triple hydrogen bonds, imparting thermal stability and structural resilience to genetic transcripts.</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- About Section -->
-    <section class="section about-section" id="about">
-      <div class="container">
-        <div class="section-badge">ABOUT THE ENGINEER</div>
-        <h2 class="section-title">Engineered for Performance & Scalability</h2>
-        <p class="section-subtitle">Bridging technical depth with aesthetic excellence to deliver memorable web experiences.</p>
+    <!-- Section 3: Real-Time Sequencing Matrix -->
+    <section class="story-section section-sequencing" id="sequencing">
+      <div class="content-wrapper align-left">
+        <div class="section-badge">GENOMIC TELEMETRY</div>
+        <h2 class="section-title">High-Fidelity Optical Decoding</h2>
+        <p class="section-subtitle">
+          Sub-nanometer fluorescence microscopy translated into 60 FPS interactive WebGL spatial shaders.
+        </p>
 
-        <div class="about-grid">
-          <div class="about-card glass-panel">
-            <div class="about-icon">⚡</div>
-            <h3>Modern Web Engineering</h3>
-            <p>From lightning-fast static portfolios and JAMstack sites to distributed web applications, I build for speed, accessibility, and resilience.</p>
+        <div class="stats-matrix">
+          <div class="stat-box glass-card">
+            <span class="stat-number">3.2<small>B</small></span>
+            <span class="stat-caption">Base Pairs Mapped</span>
           </div>
-          <div class="about-card glass-panel">
-            <div class="about-icon">🎨</div>
-            <h3>Glassmorphic UI & Motion</h3>
-            <p>Crafting silky 60 FPS transitions, modern dark themes, custom shaders, and responsive interfaces that feel alive on every device.</p>
+          <div class="stat-box glass-card">
+            <span class="stat-number">99.98<small>%</small></span>
+            <span class="stat-caption">Sequencing Fidelity</span>
           </div>
-          <div class="about-card glass-panel">
-            <div class="about-icon">☁️</div>
-            <h3>CI/CD & Cloud Deployment</h3>
-            <p>Automated zero-downtime workflows using GitHub Actions, static hosting on GitHub Pages, serverless cloud functions, and edge CDNs.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Interactive Projects Showcase -->
-    <section class="section projects-section" id="projects">
-      <div class="container">
-        <div class="section-badge">FEATURED WORK</div>
-        <h2 class="section-title">Selected Projects & Systems</h2>
-        <p class="section-subtitle">A collection of applications, full-stack systems, and creative experiments.</p>
-
-        <!-- Category Filters -->
-        <div class="filter-group" id="project-filters">
-          <button class="filter-btn active" data-filter="all">All Projects</button>
-          <button class="filter-btn" data-filter="fullstack">Full-Stack</button>
-          <button class="filter-btn" data-filter="frontend">Frontend & UI</button>
-          <button class="filter-btn" data-filter="interactive">Interactive / Lab</button>
-        </div>
-
-        <div class="projects-grid" id="projects-grid">
-          <!-- Project 1 -->
-          <article class="project-card glass-panel" data-category="interactive">
-            <div class="project-card-badge">INTERACTIVE</div>
-            <div class="project-card-header">
-              <span class="project-type">Web Audio & Canvas</span>
-              <h3 class="project-title">PulseAudio Visualizer</h3>
-            </div>
-            <p class="project-summary">Real-time reactive audio frequency analyzer with procedural particle physics and WebGL glow shaders.</p>
-            <div class="project-tags">
-              <span class="tag">HTML5 Canvas</span>
-              <span class="tag">Web Audio API</span>
-              <span class="tag">GLSL Shaders</span>
-            </div>
-            <div class="project-actions">
-              <button class="btn btn-sm btn-primary project-modal-trigger" data-project="pulseaudio">Inspect Details</button>
-              <a href="https://github.com/balakrishna-kr" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline">Source Code</a>
-            </div>
-          </article>
-
-          <!-- Project 2 -->
-          <article class="project-card glass-panel" data-category="fullstack">
-            <div class="project-card-badge">PRODUCTION</div>
-            <div class="project-card-header">
-              <span class="project-type">Full-Stack Architecture</span>
-              <h3 class="project-title">Customer Service Intelligence Hub</h3>
-            </div>
-            <p class="project-summary">Enterprise customer workflow engine featuring real-time ticketing, auth integration, and operational analytics dashboard.</p>
-            <div class="project-tags">
-              <span class="tag">React / Next.js</span>
-              <span class="tag">Node.js</span>
-              <span class="tag">REST API</span>
-              <span class="tag">PostgreSQL</span>
-            </div>
-            <div class="project-actions">
-              <button class="btn btn-sm btn-primary project-modal-trigger" data-project="custservice">Inspect Details</button>
-              <a href="https://github.com/balakrishna-kr/customer-service-frontend" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline">Source Code</a>
-            </div>
-          </article>
-
-          <!-- Project 3 -->
-          <article class="project-card glass-panel" data-category="frontend">
-            <div class="project-card-badge">CREATIVE UI</div>
-            <div class="project-card-header">
-              <span class="project-type">Interactive Experience</span>
-              <h3 class="project-title">Comic-Style Dynamic Portfolio</h3>
-            </div>
-            <p class="project-summary">A playful, comic-book inspired interactive web portfolio with custom panel transitions and comic halftone aesthetics.</p>
-            <div class="project-tags">
-              <span class="tag">CSS Grid</span>
-              <span class="tag">CSS Variables</span>
-              <span class="tag">JavaScript</span>
-              <span class="tag">SVG Art</span>
-            </div>
-            <div class="project-actions">
-              <button class="btn btn-sm btn-primary project-modal-trigger" data-project="comicportfolio">Inspect Details</button>
-              <a href="https://github.com/balakrishna-kr/Comic-Style-Portfolio-Website" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline">Source Code</a>
-            </div>
-          </article>
-
-          <!-- Project 4 -->
-          <article class="project-card glass-panel" data-category="fullstack">
-            <div class="project-card-badge">SYSTEMS</div>
-            <div class="project-card-header">
-              <span class="project-type">Cloud & Identity</span>
-              <h3 class="project-title">Secure OAuth & SSO Gateway</h3>
-            </div>
-            <p class="project-summary">Robust OAuth 2.0 and Google SSO authentication service with JWT session tokens and role-based access control.</p>
-            <div class="project-tags">
-              <span class="tag">OAuth 2.0</span>
-              <span class="tag">JWT</span>
-              <span class="tag">Express</span>
-              <span class="tag">Security</span>
-            </div>
-            <div class="project-actions">
-              <button class="btn btn-sm btn-primary project-modal-trigger" data-project="oauthsso">Inspect Details</button>
-              <a href="https://github.com/balakrishna-kr/google-auth" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline">Source Code</a>
-            </div>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <!-- Interactive UI Lab: Live Glassmorphism Styler -->
-    <section class="section lab-section" id="lab">
-      <div class="container">
-        <div class="section-badge">INTERACTIVE PLAYGROUND</div>
-        <h2 class="section-title">Live Glassmorphism & Glow Lab</h2>
-        <p class="section-subtitle">Tweak values below to customize the frosted glass effect in real time, then copy the CSS directly to your clipboard.</p>
-
-        <div class="lab-grid">
-          <!-- Controls Panel -->
-          <div class="lab-controls glass-panel">
-            <div class="control-header">
-              <h3>Glass Styler Controls</h3>
-              <button class="btn btn-sm btn-outline" id="lab-reset-btn">Reset Defaults</button>
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-info">
-                <label for="blur-slider">Backdrop Blur</label>
-                <span id="blur-val" class="slider-display">16px</span>
-              </div>
-              <input type="range" id="blur-slider" min="0" max="40" value="16" class="custom-slider">
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-info">
-                <label for="opacity-slider">Surface Opacity</label>
-                <span id="opacity-val" class="slider-display">0.45</span>
-              </div>
-              <input type="range" id="opacity-slider" min="0.05" max="0.9" step="0.05" value="0.45" class="custom-slider">
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-info">
-                <label for="border-slider">Border Radius</label>
-                <span id="border-val" class="slider-display">20px</span>
-              </div>
-              <input type="range" id="border-slider" min="4" max="48" value="20" class="custom-slider">
-            </div>
-
-            <div class="slider-group">
-              <div class="slider-info">
-                <label for="glow-slider">Glow Intensity</label>
-                <span id="glow-val" class="slider-display">24px</span>
-              </div>
-              <input type="range" id="glow-slider" min="0" max="60" value="24" class="custom-slider">
-            </div>
-
-            <button class="btn btn-primary btn-block" id="copy-css-btn">
-              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M8 4v12a2 2 0 002 2h8a2 2 0 002-2V7.242a2 2 0 00-.602-1.43L16.08 2.5a2 2 0 00-1.414-.5H10a2 2 0 00-2 2z"/><path d="M16 18v2a2 2 0 01-2 2H6a2 2 0 01-2-2V9a2 2 0 012-2h2"/></svg>
-              <span>Copy Generated CSS</span>
-            </button>
-          </div>
-
-          <!-- Live Preview Canvas -->
-          <div class="lab-preview-area">
-            <div class="lab-target-card" id="lab-preview-card">
-              <div class="card-chip">LIVE PREVIEW</div>
-              <h4>Frosted Prism Component</h4>
-              <p>This element is dynamically reacting to your slider inputs using backdrop-filter and CSS custom properties.</p>
-              <div class="code-preview-box">
-                <pre><code id="live-css-snippet">/* CSS will update dynamically */</code></pre>
-              </div>
-            </div>
+          <div class="stat-box glass-card">
+            <span class="stat-number">&lt;1.2<small>ms</small></span>
+            <span class="stat-caption">Spatial Render Latency</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Technical Skills Matrix -->
-    <section class="section skills-section" id="skills">
-      <div class="container">
-        <div class="section-badge">CORE CAPABILITIES</div>
-        <h2 class="section-title">Technical Expertise</h2>
-        <p class="section-subtitle">Proficiencies across modern engineering disciplines and tools.</p>
+    <!-- Section 4: Interactive 3D Sandbox & Lab -->
+    <section class="story-section section-lab" id="lab">
+      <div class="content-wrapper center">
+        <div class="section-badge">INTERACTIVE EXPERIMENT</div>
+        <h2 class="section-title">3D Helix Control Studio</h2>
+        <p class="section-subtitle">
+          Directly manipulate the spatial WebGL parameters. Drag your mouse anywhere to rotate the 3D double helix in real-time.
+        </p>
 
-        <div class="skills-grid">
-          <div class="skill-category glass-panel">
-            <div class="skill-category-header">
-              <span class="skill-icon">🌐</span>
-              <h3>Frontend & UI</h3>
+        <div class="sandbox-panel glass-card">
+          <div class="controls-grid">
+            <div class="control-item">
+              <div class="control-label">
+                <span>Unwind Factor</span>
+                <span id="unwind-val" class="accent-text">0%</span>
+              </div>
+              <input type="range" id="unwind-slider" min="0" max="100" value="0" class="custom-slider">
             </div>
-            <ul class="skill-list">
-              <li>
-                <div class="skill-meta"><span>JavaScript (ES2024+) & TypeScript</span><span>95%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 95%"></div></div>
-              </li>
-              <li>
-                <div class="skill-meta"><span>CSS3, Responsive Layout & Glassmorphism</span><span>98%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 98%"></div></div>
-              </li>
-              <li>
-                <div class="skill-meta"><span>React & Next.js Framework</span><span>90%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 90%"></div></div>
-              </li>
-              <li>
-                <div class="skill-meta"><span>Canvas API & Micro-Animations</span><span>88%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 88%"></div></div>
-              </li>
-            </ul>
-          </div>
 
-          <div class="skill-category glass-panel">
-            <div class="skill-category-header">
-              <span class="skill-icon">⚙️</span>
-              <h3>Backend & Cloud</h3>
+            <div class="control-item">
+              <div class="control-label">
+                <span>Rotation Velocity</span>
+                <span id="speed-val" class="accent-text">1.0x</span>
+              </div>
+              <input type="range" id="speed-slider" min="0" max="30" value="10" class="custom-slider">
             </div>
-            <ul class="skill-list">
-              <li>
-                <div class="skill-meta"><span>Node.js, Express & REST APIs</span><span>92%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 92%"></div></div>
-              </li>
-              <li>
-                <div class="skill-meta"><span>Databases (PostgreSQL, MongoDB)</span><span>86%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 86%"></div></div>
-              </li>
-              <li>
-                <div class="skill-meta"><span>Authentication (OAuth 2.0, JWT)</span><span>94%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 94%"></div></div>
-              </li>
-              <li>
-                <div class="skill-meta"><span>Git, GitHub Actions & CI/CD</span><span>90%</span></div>
-                <div class="progress-track"><div class="progress-fill" style="width: 90%"></div></div>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <!-- Contact & Connect -->
-    <section class="section contact-section" id="contact">
-      <div class="container">
-        <div class="section-badge">START A CONVERSATION</div>
-        <h2 class="section-title">Let's Build Something Brilliant</h2>
-        <p class="section-subtitle">Have a project in mind, want to discuss opportunities, or simply want to connect? Reach out below.</p>
+            <div class="control-item">
+              <div class="control-label">
+                <span>Helical Radius</span>
+                <span id="radius-val" class="accent-text">2.5</span>
+              </div>
+              <input type="range" id="radius-slider" min="10" max="50" value="25" class="custom-slider">
+            </div>
 
-        <div class="contact-grid">
-          <!-- Info Column -->
-          <div class="contact-info glass-panel">
-            <h3>Direct Contact Channels</h3>
-            <p>I typically respond within 24 hours. Feel free to contact me via email or connect directly on GitHub.</p>
-
-            <div class="info-items">
-              <div class="info-item">
-                <span class="info-icon">📧</span>
-                <div>
-                  <span class="info-label">Email</span>
-                  <a href="mailto:balakrishnakalvehalli@gmail.com" class="info-val">balakrishnakalvehalli@gmail.com</a>
-                </div>
+            <div class="control-item">
+              <div class="control-label">
+                <span>Particle Density</span>
+                <span id="particles-val" class="accent-text">1200</span>
               </div>
-              <div class="info-item">
-                <span class="info-icon">🐙</span>
-                <div>
-                  <span class="info-label">GitHub</span>
-                  <a href="https://github.com/balakrishna-kr" target="_blank" rel="noopener noreferrer" class="info-val">github.com/balakrishna-kr</a>
-                </div>
-              </div>
-              <div class="info-item">
-                <span class="info-icon">📍</span>
-                <div>
-                  <span class="info-label">Location</span>
-                  <span class="info-val">Bengaluru, Karnataka, India</span>
-                </div>
-              </div>
+              <input type="range" id="particles-slider" min="300" max="2500" step="100" value="1200" class="custom-slider">
             </div>
           </div>
 
-          <!-- Interactive Form -->
-          <div class="contact-form-wrapper glass-panel">
-            <form id="contact-form" class="contact-form">
-              <div class="form-row">
-                <div class="form-field">
-                  <label for="contact-name">Your Name</label>
-                  <input type="text" id="contact-name" name="name" required placeholder="Alex Mercer">
-                </div>
-                <div class="form-field">
-                  <label for="contact-email">Email Address</label>
-                  <input type="email" id="contact-email" name="email" required placeholder="alex@domain.com">
-                </div>
-              </div>
-
-              <div class="form-field">
-                <label for="contact-subject">Subject</label>
-                <input type="text" id="contact-subject" name="subject" required placeholder="Project Collaboration / Opportunity">
-              </div>
-
-              <div class="form-field">
-                <label for="contact-message">Message</label>
-                <textarea id="contact-message" name="message" rows="5" required placeholder="Describe your vision or inquiry..."></textarea>
-              </div>
-
-              <button type="submit" class="btn btn-primary btn-block" id="send-msg-btn">
-                <span>Send Message</span>
-                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-              </button>
-            </form>
+          <div class="sandbox-actions">
+            <button class="btn btn-outline btn-sm" id="reset-cam-btn">Reset 3D Perspective</button>
+            <button class="btn btn-primary btn-sm" id="toggle-orbit-btn">Toggle Free Orbit</button>
           </div>
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer-content">
-      <div class="footer-left">
-        <span class="footer-logo">⬡ AETHERIS</span>
-        <p class="footer-copy">Designed & Built with precision by Balakrishna K R. Hosted natively on GitHub Pages.</p>
-      </div>
-      <div class="footer-right">
-        <a href="#hero" class="btn btn-sm btn-outline" id="back-to-top">↑ Back to Top</a>
-      </div>
+  <!-- Persistent 3D Telemetry HUD (Bottom-Left) -->
+  <aside class="hud-telemetry" id="hud-telemetry">
+    <div class="hud-item">
+      <span class="hud-label">SCROLL UNWIND</span>
+      <span class="hud-value" id="hud-unwind">0.0%</span>
     </div>
-  </footer>
-
-  <!-- Project Details Modal -->
-  <div class="modal-overlay" id="project-modal" aria-hidden="true">
-    <div class="modal-box glass-panel">
-      <button class="modal-close" id="modal-close-btn" aria-label="Close Modal">&times;</button>
-      <div class="modal-content" id="modal-content">
-        <!-- Content injected dynamically via script.js -->
-      </div>
+    <div class="hud-divider"></div>
+    <div class="hud-item">
+      <span class="hud-label">ROTATION θ</span>
+      <span class="hud-value" id="hud-rotation">0.00 rad</span>
     </div>
-  </div>
+    <div class="hud-divider"></div>
+    <div class="hud-item">
+      <span class="hud-label">RENDER</span>
+      <span class="hud-value accent-text">60 FPS WEBGL</span>
+    </div>
+  </aside>
 
-  <!-- Floating Toast Notification -->
+  <!-- Toast Notification -->
   <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
   <script src="script.js"></script>
